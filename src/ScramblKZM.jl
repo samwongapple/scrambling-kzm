@@ -24,10 +24,12 @@ include("observables/energy.jl")
 include("observables/entanglement.jl")
 include("observables/operator_entanglement.jl")
 
-# Analysis (order matters: error_operator before scrambling before trotter_error)
+# Analysis (order matters: error_operator -> scrambling -> trotter_error -> adaptive -> comparison)
 include("analysis/error_operator.jl")
 include("analysis/scrambling.jl")
 include("analysis/trotter_error.jl")
+include("analysis/adaptive.jl")
+include("analysis/comparison.jl")
 
 # Utilities
 include("utils/config.jl")
@@ -54,7 +56,7 @@ export energy, energy_variance
 export half_chain_entropy, bond_entropies
 export operator_induced_entropy
 
-# Analysis — error operators
+# Analysis — error operators & scrambling
 export commutator_mpo, build_hz_hx_commutator
 export build_kink_zz_mpo, build_scrambling_operator
 export scrambling_bound, scrambling_profile
@@ -62,6 +64,13 @@ export scrambling_bound, scrambling_profile
 # Analysis — Trotter errors
 export StepErrorResult, compute_step_errors
 export TimeResolvedResult, time_resolved_errors
+
+# Analysis — adaptive schedules
+export energy_adaptive_schedule
+export kink_bound_adaptive_schedule, kink_direct_adaptive_schedule
+
+# Analysis — comparison
+export ComparisonResult, run_single_schedule
 
 # Utilities
 export load_config

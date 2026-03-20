@@ -202,6 +202,55 @@ using .ScramblKZM
         @test abs(tr.n_exact[end] - tr.n_trotter[end]) > 0
     end
 
+    @testset "Energy Adaptive Schedule" begin
+        model = TFIM(4; J=1.0, bc=:open)
+        schedule = LinearQuench(1.0, 1.0)
+        ts, diag = energy_adaptive_schedule(1.0, 10, model, schedule;
+                                            chi_max=16, n_iterations=2)
+        @test isa(ts, TimeSchedule)
+        @test length(ts) == 10
+        @test abs(ts.t_points[end] - 1.0) < 1e-10
+        @test haskey(diag, "delta_E_iterations")
+        @test length(diag["delta_E_iterations"]) == 2
+        # Steps should be non-uniform after adaptation
+        @test !all(dt -> abs(dt - 0.1) < 1e-10, ts.dt_values)
+    end
+
+    @testset "Kink Bound Adaptive Schedule" begin
+        tau_Q = 1.0; N = 10
+        schedule = LinearQuench(tau_Q, 1.0)
+        t_prof = collect(range(0.01, tau_Q-0.01, length=30))
+        # Fake B_kink profile peaking at t_c = 0.5
+        B_prof = [exp(-10*(t/tau_Q - 0.5)^2) for t in t_prof]
+        ts = kink_bound_adaptive_schedule(tau_Q, N, B_prof, t_prof, schedule)
+        @test length(ts) == N
+        @test abs(ts.t_points[end] - tau_Q) < 1e-10
+        # Steps near t_c should be smaller than at edges
+        mid_idx = div(N, 2)
+        @test ts.dt_values[mid_idx] < ts.dt_values[1] || ts.dt_values[mid_idx] < ts.dt_values[end]
+    end
+
+    @testset "Kink Direct Adaptive Schedule" begin
+        tau_Q = 1.0; N = 10
+        schedule = LinearQuench(tau_Q, 1.0)
+        t_prof = collect(range(0.01, tau_Q-0.01, length=30))
+        eps_prof = [exp(-10*(t/tau_Q - 0.4)^2) for t in t_prof]
+        ts = kink_direct_adaptive_schedule(tau_Q, N, eps_prof, t_prof, schedule)
+        @test length(ts) == N
+        @test abs(ts.t_points[end] - tau_Q) < 1e-10
+    end
+
+    @testset "Comparison — run_single_schedule" begin
+        model = TFIM(4; J=1.0, bc=:open)
+        schedule = LinearQuench(1.0, 1.0)
+        ts = uniform_schedule(1.0, 10)
+        r = run_single_schedule(model, schedule, ts, 0.3, 0.6; chi_max=16)
+        @test isa(r, ComparisonResult)
+        @test r.N_steps == 10
+        @test r.n_kink > 0
+        @test r.err_n >= 0
+    end
+
     @testset "Config Loading" begin
         tmp = tempname() * ".toml"
         open(tmp, "w") do io

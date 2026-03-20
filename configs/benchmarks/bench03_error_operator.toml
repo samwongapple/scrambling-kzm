@@ -1,0 +1,15 @@
+[model]
+type = "TFIM"
+J = 1.0
+bc = "periodic"
+
+[sweep]
+system_sizes = [10, 20]
+
+[quench]
+schedule = "linear"
+tau_Q = 10.0
+
+[output]
+data_dir = "data/bench03"
+figure_dir = "figures/bench03"

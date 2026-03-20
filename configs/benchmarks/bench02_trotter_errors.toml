@@ -1,0 +1,28 @@
+[model]
+type = "TFIM"
+L = 20
+J = 1.0
+bc = "periodic"
+
+[quench]
+schedule = "linear"
+tau_Q = 10.0
+
+[sweep]
+N_steps_values = [10, 20, 50, 100, 200, 500]
+
+[reference]
+n_steps = 2000
+chi_max = 128
+
+[simulation]
+chi_max = 64
+cutoff = 1e-12
+
+[time_resolved]
+N_steps = 50
+n_snapshots = 30
+
+[output]
+data_dir = "data/bench02"
+figure_dir = "figures/bench02"

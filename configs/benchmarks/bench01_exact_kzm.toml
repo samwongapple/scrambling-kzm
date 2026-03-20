@@ -1,0 +1,30 @@
+[model]
+type = "TFIM"
+J = 1.0
+bc = "periodic"
+
+[quench]
+schedule = "linear"
+
+[sweep]
+system_sizes = [20, 40, 60, 80, 100]
+tau_Q_values = [1.0, 2.0, 5.0, 10.0, 20.0, 50.0, 100.0]
+
+[simulation]
+method = "tebd"
+n_steps = 4000
+chi_max = 256
+cutoff = 1e-12
+
+[observables]
+compute = ["kink_density", "kink_cumulants", "entanglement"]
+
+[convergence]
+chi_max_check = [128, 256, 512]
+n_steps_check = [2000, 4000, 8000]
+
+[output]
+data_dir = "data/bench01"
+figure_dir = "figures/bench01"
+save_states = false
+save_observables = true

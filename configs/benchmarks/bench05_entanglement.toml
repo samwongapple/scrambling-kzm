@@ -1,0 +1,21 @@
+[model]
+type = "TFIM"
+L = 20
+J = 1.0
+bc = "periodic"
+
+[quench]
+schedule = "linear"
+tau_Q = 10.0
+
+[analysis]
+n_time_points = 40
+chi_max = 128
+
+[reference]
+n_steps = 2000
+chi_max = 128
+
+[output]
+data_dir = "data/bench05"
+figure_dir = "figures/bench05"

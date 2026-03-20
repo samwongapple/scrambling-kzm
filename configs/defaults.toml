@@ -1,0 +1,22 @@
+[model]
+type = "TFIM"
+J = 1.0
+bc = "periodic"
+
+[quench]
+schedule = "linear"
+
+[simulation]
+method = "tebd"
+n_steps = 4000
+chi_max = 256
+cutoff = 1e-12
+
+[observables]
+compute = ["kink_density", "kink_cumulants", "entanglement"]
+
+[output]
+data_dir = "data"
+figure_dir = "figures"
+save_states = false
+save_observables = true
